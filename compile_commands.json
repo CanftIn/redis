@@ -1,0 +1,56 @@
+[
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/base/config.c.o", "base/config.c"],
+  "file": "base/config.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/base/monotonic.c.o", "base/monotonic.c"],
+  "file": "base/monotonic.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/net/ae_epoll.c.o", "net/ae_epoll.c"],
+  "file": "net/ae_epoll.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/net/ae_evport.c.o", "net/ae_evport.c"],
+  "file": "net/ae_evport.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/net/ae_kqueue.c.o", "net/ae_kqueue.c"],
+  "file": "net/ae_kqueue.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/net/ae_select.c.o", "net/ae_select.c"],
+  "file": "net/ae_select.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/net/anet.c.o", "net/anet.c"],
+  "file": "net/anet.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/server/redis.c.o", "server/redis.c"],
+  "file": "server/redis.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/util/util.c.o", "util/util.c"],
+  "file": "util/util.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/struct/sds.c.o", "struct/sds.c"],
+  "file": "struct/sds.c"
+},
+{
+  "directory": "/workspace/redis/new_src",
+  "arguments": ["clang", "-c", "-Qunused-arguments", "-fvisibility=hidden", "-Wall", "-Wextra", "-O3", "-std=c11", "-Ibase", "-Idata", "-Inet", "-Iserver", "-Iutil", "-Ievent", "-Istruct", "-Ideps/fpconv", "-DNDEBUG", "-o", "build/.objs/redis/linux/arm64-v8a/release/event/ae.c.o", "event/ae.c"],
+  "file": "event/ae.c"
+}]
