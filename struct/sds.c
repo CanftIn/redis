@@ -41,6 +41,7 @@
 
 const char *SDS_NOINIT = "SDS_NOINIT";
 
+// 根据类型获取struct长度
 static inline int sdsHdrSize(char type) {
     switch(type&SDS_TYPE_MASK) {
         case SDS_TYPE_5:
@@ -57,6 +58,7 @@ static inline int sdsHdrSize(char type) {
     return 0;
 }
 
+// 根据初始化长度获取sds类型
 static inline char sdsReqType(size_t string_size) {
     if (string_size < 1<<5)
         return SDS_TYPE_5;
@@ -73,6 +75,7 @@ static inline char sdsReqType(size_t string_size) {
 #endif
 }
 
+// 根据类型获取最大长度，去除\0的长度
 static inline size_t sdsTypeMaxSize(char type) {
     if (type == SDS_TYPE_5)
         return (1<<5) - 1;
@@ -101,25 +104,35 @@ static inline size_t sdsTypeMaxSize(char type) {
  * end of the string. However the string is binary safe and can contain
  * \0 characters in the middle, as the length is stored in the sds header. */
 sds _sdsnewlen(const void *init, size_t initlen, int trymalloc) {
+    // 这个指针会指向整个sds开始的地方
     void *sh;
+    // sds 实际上也是一个指针，
+    // 但是s指向整个struct buf开始的位置
     sds s;
+    // 根据不同的长度返回不同的类型的sds
     char type = sdsReqType(initlen);
     /* Empty strings are usually created in order to append. Use type 8
      * since type 5 is not good at this. */
     if (type == SDS_TYPE_5 && initlen == 0) type = SDS_TYPE_8;
     int hdrlen = sdsHdrSize(type);
+    // flag 指针，这个指针就是用来表示sds是哪个类型的
     unsigned char *fp; /* flags pointer. */
     size_t usable;
 
     assert(initlen + hdrlen + 1 > initlen); /* Catch size_t overflow */
+    // 分配空间 这里+1 为的是分配一个结束符号
     sh = trymalloc?
         s_trymalloc_usable(hdrlen+initlen+1, &usable) :
         s_malloc_usable(hdrlen+initlen+1, &usable);
+    // sh在这里指向了这个刚刚分配的内存地址
     if (sh == NULL) return NULL;
+    // 判断是否是init阶段
     if (init==SDS_NOINIT)
         init = NULL;
+    // 如果不是init阶段则清0
     else if (!init)
         memset(sh, 0, hdrlen+initlen+1);
+    // s 指向了字符串开始的地址，hdrlen 可以看错sds head
     s = (char*)sh+hdrlen;
     fp = ((unsigned char*)s)-1;
     usable = usable-hdrlen-1;
@@ -165,6 +178,10 @@ sds _sdsnewlen(const void *init, size_t initlen, int trymalloc) {
     return s;
 }
 
+// 因为sds 在最前面指定了整个字符的长度，即使中间出现\0结束符，也能正常编译，
+// 而不至于担心因为出现了结束符/0，而导致解码失败。
+
+// sdsnewlen重构的时候按参数分执行路径，如下面两个函数。
 sds sdsnewlen(const void *init, size_t initlen) {
     return _sdsnewlen(init, initlen, 0);
 }

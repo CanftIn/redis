@@ -40,6 +40,7 @@ extern const char *SDS_NOINIT;
 #include <stdarg.h>
 #include <stdint.h>
 
+// simple dynamic string 简单动态字符串
 typedef char *sds;
 
 /* Note: sdshdr5 is never used, we just access the flags byte directly.
@@ -48,10 +49,18 @@ struct __attribute__ ((__packed__)) sdshdr5 {
     unsigned char flags; /* 3 lsb of type, and 5 msb of string length */
     char buf[];
 };
+
+// lsb: Least Significant Bit 最低有效位
+// __attribute__ ((__packed__)) 代表structure 采用手动对齐的方式
+// hdr: header缩写
 struct __attribute__ ((__packed__)) sdshdr8 {
+    // buf已经使用的长度
     uint8_t len; /* used */
+    // buf分配的长度，等于buf[]的总长度-1，因为buf有包括一个/0的结束符
     uint8_t alloc; /* excluding the header and null terminator */
+    // 只有3位有效位，因为类型的表示就是0到4，所有这个8位的flags 有5位没有被用到
     unsigned char flags; /* 3 lsb of type, 5 unused bits */
+    // 实际的字符串存在这里
     char buf[];
 };
 struct __attribute__ ((__packed__)) sdshdr16 {

@@ -29,3 +29,14 @@ target("redis")
     add_files("./struct/*.c")
     add_files("./event/*.c")
     add_files("./deps/fpconv/*.c")
+
+-- test
+add_includedirs("./fuck_redis/monotime")
+target("monotime")
+    set_kind("binary")
+    add_files("./fuck_redis/monotime/*.c")
+
+target("sds")
+    set_kind("binary")
+    add_files("./fuck_redis/sds/*.c")
+

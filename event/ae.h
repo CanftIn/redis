@@ -46,7 +46,8 @@
 前面讲到，网络 IO 事件注册的时候，除了正常的读写事件外，还可以注册一个 AE_BARRIER 事件，这个事件就是会影响到先读后写的处理顺序。
 如果某个 fd 的 mask 包含了 AE_BARRIER，那它的处理顺序会是 先写后读。
 
-针对这个场景，redis 举的例子是，如果在 beforesleep 回调中进行了 fsync 动作，然后需要把结果快速回复给 client。这个情况下就需要用到 AE_BARRIER 事件，用来翻转处理事件顺序了。
+针对这个场景，redis 举的例子是，如果在 beforesleep 回调中进行了 fsync 动作，然后需要把结果快速回复给 client。
+这个情况下就需要用到 AE_BARRIER 事件，用来翻转处理事件顺序了。
 */
 #define AE_NONE 0       /* No events registered. */
 #define AE_READABLE 1   /* Fire when descriptor is readable. */
@@ -64,6 +65,18 @@
 #define AE_CALL_BEFORE_SLEEP (1<<3)
 #define AE_CALL_AFTER_SLEEP (1<<4)
 
+
+/*
+Redis 的时间事件分为以下两类：
+
+- 定时事件：让一段程序在指定的时间之后执行一次。
+- 周期性事件：让一段程序每隔指定时间就执行一次。
+
+一个时间事件是定时事件还是周期性事件取决于时间处理器的返回值：
+- 如果返回值是 AE_NOMORE，那么这个事件是一个定时事件，该事件在达到后删除，之后不会再重复。
+- 如果返回值是非 AE_NOMORE 的值，那么这个事件为周期性事件，当一个时间事件到达后，服务器会根据时间处理器的返回值，
+对时间事件的 when 属性进行更新，让这个事件在一段时间后再次达到。
+*/
 #define AE_NOMORE -1
 #define AE_DELETED_EVENT_ID -1
 
@@ -82,25 +95,36 @@ typedef void aeBeforeSleepProc(struct aeEventLoop *eventLoop);
 /* File event structure */
 typedef struct aeFileEvent {
     int mask; /* one of AE_(READABLE|WRITABLE|BARRIER) */
+    // 读写处理器
     aeFileProc *rfileProc;
     aeFileProc *wfileProc;
+    // 私有数据
     void *clientData;
 } aeFileEvent;
 
 // 超时事件
 /* Time event structure */
 typedef struct aeTimeEvent {
+    // 全局唯一id
     long long id; /* time event identifier. */
+    // 微秒级别unix时间戳，记录事件到达时间
     monotime when;
+    // 时间处理器
     aeTimeProc *timeProc;
+    // 事件结束回调函数，释放资源
     aeEventFinalizerProc *finalizerProc;
+    // 私有数据
     void *clientData;
+    // 前驱节点
     struct aeTimeEvent *prev;
+    // 后驱节点
     struct aeTimeEvent *next;
+    // 引用计数，避免时间事件在循环调用中释放
     int refcount; /* refcount to prevent timer events from being
   		   * freed in recursive time event calls. */
 } aeTimeEvent;
 
+// 已经就绪的io事件
 /* A fired event */
 typedef struct aeFiredEvent {
     int fd;
@@ -109,14 +133,23 @@ typedef struct aeFiredEvent {
 
 /* State of an event based program */
 typedef struct aeEventLoop {
+    // 当前注册的最大的文件描述符
     int maxfd;   /* highest file descriptor currently registered */
+    // 当前已经追踪的最大文件描述符数量
     int setsize; /* max number of file descriptors tracked */
+    // 生成时间事件的唯一标识id
     long long timeEventNextId;
+    // 存储已经注册的文件事件，它是一个数组，用 fd 做索引来访问相应事件（对应处理函数）
     aeFileEvent *events; /* Registered events */
+    // 已经就绪的文件事件
     aeFiredEvent *fired; /* Fired events */
+    // 时间事件链表头节点，因为可能有多个时间事件，组成一个链表
     aeTimeEvent *timeEventHead;
+    // 标志事件循环是否结束
     int stop;
+    // 多路复用的私有数据
     void *apidata; /* This is used for polling API specific data */
+    // 进程阻塞之前会调用的函数，事件函数运行前调用的函数，相当于事件函数运行前的钩子函数
     aeBeforeSleepProc *beforesleep;
     aeBeforeSleepProc *aftersleep;
     int flags;

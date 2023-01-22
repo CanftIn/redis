@@ -32,6 +32,7 @@
 #define __ZMALLOC_H
 
 /* Double expansion needed for stringification of macro values. */
+#include <stddef.h>
 #define __xstr(s) __str(s)
 #define __str(s) #s
 
