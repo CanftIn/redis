@@ -30,6 +30,20 @@ test_struct {
 static inline int sdsHdrSize() { return sizeof(struct sdshdr8); }
 
 static inline int testStructSize() { return sizeof(struct test_struct); }
+
+#define SDS_HDR_VAR(T,s) struct sdshdr##T *sh = (void*)((s)-(sizeof(struct sdshdr##T)));
+
+void test() {
+  char* s;
+  //void* sh;
+  struct sdshdr8* sh = (void*)(s);
+  switch (1) {
+    case 1: {
+      SDS_HDR_VAR(8, s);
+    }
+  }
+}
+
 int main() {
   int hdrlen = sdsHdrSize();
   printf("%d\n", hdrlen);

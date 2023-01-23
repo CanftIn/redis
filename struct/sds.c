@@ -132,8 +132,10 @@ sds _sdsnewlen(const void *init, size_t initlen, int trymalloc) {
     // 如果不是init阶段则清0
     else if (!init)
         memset(sh, 0, hdrlen+initlen+1);
-    // s 指向了字符串开始的地址，hdrlen 可以看错sds head
+    // s指向了字符串开始的地址，hdrlen是sds head长
     s = (char*)sh+hdrlen;
+    // 因为可以看到地址的顺序是 len,alloc,flag,buf,目前s是指向buf，
+    // 那么后退1位,fp 正好指向了flag对应的地址。
     fp = ((unsigned char*)s)-1;
     usable = usable-hdrlen-1;
     if (usable > sdsTypeMaxSize(type))
