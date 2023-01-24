@@ -38,5 +38,8 @@ target("monotime")
 
 target("sds")
     set_kind("binary")
-    add_files("./fuck_redis/sds/*.c")
+    add_files("./fuck_redis/sds/sds.c")
 
+target("ll2str")
+    set_kind("binary")
+    add_files("./fuck_redis/sds/ll2str.c")

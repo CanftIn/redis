@@ -146,6 +146,7 @@ sds _sdsnewlen(const void *init, size_t initlen, int trymalloc) {
             break;
         }
         case SDS_TYPE_8: {
+            // 根据指向buf的sds变量s得到sdshdr8的指针
             SDS_HDR_VAR(8,s);
             sh->len = initlen;
             sh->alloc = usable;
@@ -238,6 +239,7 @@ void sdsupdatelen(sds s) {
  * However all the existing buffer is not discarded but set as free space
  * so that next append operations will not require allocations up to the
  * number of bytes previously available. */
+// 惰性释放空间
 void sdsclear(sds s) {
     sdssetlen(s, 0);
     s[0] = '\0';
@@ -264,26 +266,34 @@ sds _sdsMakeRoomFor(sds s, size_t addlen, int greedy) {
     size_t usable;
 
     /* Return ASAP if there is enough space left. */
+    // 如果剩余空间足够的话，则不做realloc操作直接返回
     if (avail >= addlen) return s;
 
     len = sdslen(s);
     sh = (char*)s-sdsHdrSize(oldtype);
+    // 如果剩余空间不足，则重新给出新的len
     reqlen = newlen = (len+addlen);
     assert(newlen > len);   /* Catch size_t overflow */
     if (greedy == 1) {
+        //如果新的长度小于1m的话，则二倍扩容
         if (newlen < SDS_MAX_PREALLOC)
             newlen *= 2;
         else
+            //如果新的长度大于1m的话，则每次只新加1m
+            //（插句题外话，对于redis,1m以上的value都是大key了
+            //（从源码中也可以看到，作者也认为正常的value大小是应该在1m以上的），
+            // 需要从业务上减小value的大小，保证redis的性能）
             newlen += SDS_MAX_PREALLOC;
     }
-
+    // 修改sdshdr的len
     type = sdsReqType(newlen);
 
     /* Don't use type 5: the user is appending to the string and type 5 is
      * not able to remember empty space, so sdsMakeRoomFor() must be called
      * at every appending operation. */
+    // 字符串追加发生了realloc，那么需要将新的地址返回
     if (type == SDS_TYPE_5) type = SDS_TYPE_8;
-
+    // 将sdshdr复制一份，给到新的sdshdr里，之后将sds地址返回给调用方，避免sds地址丢失
     hdrlen = sdsHdrSize(type);
     assert(hdrlen + newlen + 1 > reqlen);  /* Catch size_t overflow */
     if (oldtype==type) {
