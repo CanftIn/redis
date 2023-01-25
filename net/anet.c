@@ -296,6 +296,7 @@ static int anetCreateSocket(char *err, int domain) {
 
 #define ANET_CONNECT_NONE 0
 #define ANET_CONNECT_NONBLOCK 1
+// 优先绑定本地地址，失败后连接远程地址
 #define ANET_CONNECT_BE_BINDING 2 /* Best effort binding. */
 static int anetTcpGenericConnect(char *err, const char *addr, int port,
                                  const char *source_addr, int flags)
@@ -308,7 +309,7 @@ static int anetTcpGenericConnect(char *err, const char *addr, int port,
     memset(&hints,0,sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
-
+    // 获取连接的目标地址端口的类型
     if ((rv = getaddrinfo(addr,portstr,&hints,&servinfo)) != 0) {
         anetSetError(err, "%s", gai_strerror(rv));
         return ANET_ERR;
@@ -317,11 +318,13 @@ static int anetTcpGenericConnect(char *err, const char *addr, int port,
         /* Try to create the socket and to connect it.
          * If we fail in the socket() call, or on connect(), we retry with
          * the next entry in servinfo. */
+        // 尝试创建本地套接字并连接 如果成功则退出 否则尝试下一个目标套接字实体
         if ((s = socket(p->ai_family,p->ai_socktype,p->ai_protocol)) == -1)
             continue;
         if (anetSetReuseAddr(err,s) == ANET_ERR) goto error;
         if (flags & ANET_CONNECT_NONBLOCK && anetNonBlock(err,s) != ANET_OK)
             goto error;
+        // 如果有源地址代表是服务器则需要bind本地地址
         if (source_addr) {
             int bound = 0;
             /* Using getaddrinfo saves us from self-determining IPv4 vs IPv6 */
@@ -345,6 +348,7 @@ static int anetTcpGenericConnect(char *err, const char *addr, int port,
         if (connect(s,p->ai_addr,p->ai_addrlen) == -1) {
             /* If the socket is non-blocking, it is ok for connect() to
              * return an EINPROGRESS error here. */
+            // 如果套接字非阻塞并且连接返回EINPROGRESS，返回当前占用的套接字
             if (errno == EINPROGRESS && flags & ANET_CONNECT_NONBLOCK)
                 goto end;
             close(s);

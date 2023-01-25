@@ -43,3 +43,7 @@ target("sds")
 target("ll2str")
     set_kind("binary")
     add_files("./fuck_redis/sds/ll2str.c")
+
+target("vsnprintf_test")
+    set_kind("binary")
+    add_files("./fuck_redis/anet/vsnprintf_test.c")
